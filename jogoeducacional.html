@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Desafio da Sociedade Conectada</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Fonte e cores gerais */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Cabeçalho */
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2em;
+        }
+
+        /* Informações do Jogador */
+        #player-info {
+            margin-top: 10px;
+            font-size: 1em;
+        }
+
+        /* Navegação */
+        nav {
+            background-color: #333;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav ul {
+            list-style-type: none;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin: 0;
+        }
+
+        nav ul li a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            cursor: pointer;
+        }
+
+        nav ul li a.locked {
+            background-color: #555;
+            cursor: not-allowed;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        nav ul li a:hover:not(.locked) {
+            background-color: #575757;
+        }
+
+        /* Container principal */
+        .container {
+            flex: 1;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Seções das fases */
+        .phase {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Títulos das fases */
+        .phase h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #4CAF50;
+            text-align: center;
+        }
+
+        /* Imagens das fases */
+        .phase img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Perguntas */
+        .phase p.question {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Botões de decisão */
+        .choice {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .choice button {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+            background-color: #2196F3; /* Azul padrão */
+            color: white;
+        }
+
+        .choice button:hover:not(.disabled) {
+            transform: translateY(-3px);
+            background-color: #1976D2; /* Azul escuro ao passar o mouse */
+        }
+
+        /* Lição */
+        .lesson {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4CAF50;
+            padding: 15px 20px;
+            border-radius: 5px;
+            font-size: 1.1em;
+            display: none;
+            animation: slideDown 0.5s ease-in-out;
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Introdução */
+        .intro {
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .intro h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+            color: #4CAF50;
+        }
+
+        .intro p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .intro input[type="text"] {
+            padding: 10px;
+            font-size: 1em;
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 20px;
+            border: 2px solid #4CAF50;
+            border-radius: 5px;
+        }
+
+        .intro button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .intro button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            font-size: 0.9em;
+        }
+
+        footer button {
+            padding: 10px 20px;
+            font-size: 0.9em;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+
+        footer button:hover {
+            background-color: #da190b;
+            transform: translateY(-2px);
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            nav ul {
+                flex-direction: column;
+            }
+
+            .choice button {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Desafio da Sociedade Conectada</h1>
+        <p>Um jogo interativo para aprender sobre o uso responsável da tecnologia</p>
+        <div id="player-info">
+            <!-- Nome e Pontos serão exibidos aqui -->
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#" data-phase="fase1" id="menu-fase1">Uso de Redes Sociais</a></li>
+            <li><a href="#" data-phase="fase2" id="menu-fase2" class="locked">Tempo de Tela</a></li>
+            <li><a href="#" data-phase="fase3" id="menu-fase3" class="locked">Impacto Ambiental</a></li>
+            <li><a href="#" data-phase="fase4" id="menu-fase4" class="locked">Segurança Digital</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" id="game-container">
+
+        <!-- Introdução -->
+        <div class="intro" id="intro">
+            <h2>Bem-vindo ao Desafio da Sociedade Conectada!</h2>
+            <p>Por favor, insira seu nome para começar:</p>
+            <input type="text" id="player-name" placeholder="Seu Nome">
+            <br>
+            <button onclick="startGame()">Começar o Jogo</button>
+        </div>
+
+        <!-- Fase 1: Uso de Redes Sociais -->
+        <section id="fase1" class="phase">
+            <h2>Fase 1: Uso de Redes Sociais</h2>
+            <!-- Imagem da fase -->
+            <img src="redessociais.jpeg" alt="Uso de Redes Sociais">
+            <p class="question">Você começou a usar uma rede social e encontrou várias notícias. Você vê uma notícia interessante e pensa em compartilhá-la.</p>
+            
+            <div class="choice">
+                <button onclick="showLesson('fase1', 'positivo', this)">Verificar a fonte da notícia antes de compartilhar</button>
+                <button onclick="showLesson('fase1', 'negativo', this)">Compartilhar a notícia sem verificar se é verdadeira</button>
+            </div>
+
+            <div id="fase1-lesson" class="lesson">
+                <!-- Lição será exibida aqui -->
+            </div>
+        </section>
+
+        <!-- Fase 2: Tempo de Tela -->
+        <section id="fase2" class="phase">
+            <h2>Fase 2: Tempo de Tela</h2>
+            <!-- Imagem da fase -->
+            <img src="tempotela.jpeg" alt="Tempo de Tela">
+            <p class="question">Você passa horas jogando e nas redes sociais, mas tem uma prova importante no dia seguinte.</p>
+            
+            <div class="choice">
+                <button onclick="showLesson('fase2', 'negativo', this)">Continuar usando o dispositivo sem parar</button>
+                <button onclick="showLesson('fase2', 'positivo', this)">Definir um tempo limite de uso e descansar antes de dormir</button>
+            </div>
+
+            <div id="fase2-lesson" class="lesson">
+                <!-- Lição será exibida aqui -->
+            </div>
+        </section>
+
+        <!-- Fase 3: Impacto Ambiental -->
+        <section id="fase3" class="phase">
+            <h2>Fase 3: Impacto Ambiental dos Dispositivos Eletrônicos</h2>
+            <!-- Imagem da fase -->
+            <img src="impactoambiental.jpeg" alt="Impacto Ambiental">
+            <p class="question">Você precisa descartar seu celular antigo.</p>
+            
+            <div class="choice">
+                <button onclick="showLesson('fase3', 'positivo', this)">Levar o celular para uma coleta de lixo eletrônico</button>
+                <button onclick="showLesson('fase3', 'negativo', this)">Jogar o celular fora no lixo comum</button>
+            </div>
+
+            <div id="fase3-lesson" class="lesson">
+                <!-- Lição será exibida aqui -->
+            </div>
+        </section>
+
+        <!-- Fase 4: Segurança Digital -->
+        <section id="fase4" class="phase">
+            <h2>Fase 4: Segurança Digital</h2>
+            <!-- Imagem da fase -->
+            <img src="segurancadigital.jpeg" alt="Segurança Digital">
+            <p class="question">Você é convidado a compartilhar sua senha com um colega para ter acesso a um jogo online.</p>
+            
+            <div class="choice">
+                <button onclick="showLesson('fase4', 'negativo', this)">Compartilhar a senha</button>
+                <button onclick="showLesson('fase4', 'positivo', this)">Guardar a senha apenas para si e sugerir ao colega criar sua própria conta</button>
+            </div>
+
+            <div id="fase4-lesson" class="lesson">
+                <!-- Lição será exibida aqui -->
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <button onclick="resetGame()">Resetar Jogo</button>
+        <p>&copy; 2024 Desafio da Sociedade Conectada. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Função para iniciar o jogo
+        function startGame() {
+            const nameInput = document.getElementById('player-name');
+            const playerName = nameInput.value.trim();
+
+            if (playerName === "") {
+                alert("Por favor, insira seu nome para começar.");
+                return;
+            }
+
+            // Salva os dados iniciais no localStorage
+            const gameData = {
+                playerName: playerName,
+                points: 0,
+                completedPhases: [],
+                currentPhase: 'fase1'
+            };
+            localStorage.setItem('gameData', JSON.stringify(gameData));
+
+            // Atualiza as informações do jogador no cabeçalho
+            updatePlayerInfo();
+
+            // Esconde a introdução e mostra a primeira fase
+            document.getElementById('intro').style.display = 'none';
+            showPhase('fase1');
+            updateMenu();
+        }
+
+        // Função para atualizar as informações do jogador no cabeçalho
+        function updatePlayerInfo() {
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+            if (gameData) {
+                document.getElementById('player-info').innerHTML = `
+                    <p><strong>Jogador:</strong> ${gameData.playerName}</p>
+                    <p><strong>Pontos:</strong> ${gameData.points}</p>
+                `;
+            }
+        }
+
+        // Função para exibir a fase selecionada
+        function showPhase(phaseId) {
+            // Esconde todas as fases
+            const phases = document.querySelectorAll('.phase');
+            phases.forEach(phase => phase.classList.remove('active'));
+
+            // Esconde todas as lições
+            const lessons = document.querySelectorAll('.lesson');
+            lessons.forEach(lesson => lesson.style.display = 'none');
+
+            // Exibe a fase selecionada
+            const selectedPhase = document.getElementById(phaseId);
+            if (selectedPhase) {
+                selectedPhase.classList.add('active');
+                selectedPhase.scrollIntoView({ behavior: 'smooth' });
+
+                // Atualiza a fase atual no localStorage
+                const gameData = JSON.parse(localStorage.getItem('gameData'));
+                gameData.currentPhase = phaseId;
+                localStorage.setItem('gameData', JSON.stringify(gameData));
+            }
+        }
+
+        // Função para exibir a lição com base na fase e na decisão
+        function showLesson(phaseId, type, button) {
+            const lessonDiv = document.getElementById(`${phaseId}-lesson`);
+            let lessonText = "";
+            let pointsEarned = 0;
+
+            if (phaseId === 'fase1') {
+                if (type === 'negativo') {
+                    lessonText = "<strong>Impacto Negativo:</strong> Compartilhar sem verificar pode espalhar desinformação.";
+                    pointsEarned = 0;
+                } else {
+                    lessonText = "<strong>Impacto Positivo:</strong> Verificar a fonte promove informação confiável.";
+                    pointsEarned = 10;
+                }
+            } else if (phaseId === 'fase2') {
+                if (type === 'negativo') {
+                    lessonText = "<strong>Impacto Negativo:</strong> Continuar usando o dispositivo sem parar afeta o sono e o desempenho escolar.";
+                    pointsEarned = 0;
+                } else {
+                    lessonText = "<strong>Impacto Positivo:</strong> Definir um tempo limite promove equilíbrio saudável entre tecnologia e responsabilidades.";
+                    pointsEarned = 10;
+                }
+            } else if (phaseId === 'fase3') {
+                if (type === 'negativo') {
+                    lessonText = "<strong>Impacto Negativo:</strong> Jogar o celular no lixo comum causa poluição ambiental.";
+                    pointsEarned = 0;
+                } else {
+                    lessonText = "<strong>Impacto Positivo:</strong> Levar o celular para reciclagem reduz danos ambientais.";
+                    pointsEarned = 10;
+                }
+            } else if (phaseId === 'fase4') {
+                if (type === 'negativo') {
+                    lessonText = "<strong>Impacto Negativo:</strong> Compartilhar a senha aumenta riscos de segurança e privacidade.";
+                    pointsEarned = 0;
+                } else {
+                    lessonText = "<strong>Impacto Positivo:</strong> Guardar a senha protege seus dados e mantém a segurança online.";
+                    pointsEarned = 10;
+                }
+            }
+
+            lessonDiv.innerHTML = lessonText;
+            lessonDiv.style.display = 'block';
+
+            // Atualiza os pontos no localStorage
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+            gameData.points += pointsEarned;
+            localStorage.setItem('gameData', JSON.stringify(gameData));
+            updatePlayerInfo();
+
+            // Muda a cor do botão clicado
+            setButtonStyle(button, type);
+
+            // Desabilita todos os botões na fase após a escolha
+            const phaseSection = document.getElementById(phaseId);
+            const buttons = phaseSection.querySelectorAll('.choice button');
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                if (btn !== button) {
+                    btn.style.opacity = '0.6';
+                    btn.style.cursor = 'not-allowed';
+                }
+            });
+
+            // Marca a fase como completada e desbloqueia a próxima fase
+            markPhaseAsCompleted(phaseId);
+            updateMenu();
+        }
+
+        // Função para definir o estilo do botão após a escolha
+        function setButtonStyle(button, type) {
+            if (type === 'negativo') {
+                button.style.backgroundColor = '#f44336'; // Vermelho
+            } else if (type === 'positivo') {
+                button.style.backgroundColor = '#4CAF50'; // Verde
+            }
+        }
+
+        // Função para marcar a fase como completada
+        function markPhaseAsCompleted(phaseId) {
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+            if (!gameData.completedPhases.includes(phaseId)) {
+                gameData.completedPhases.push(phaseId);
+                localStorage.setItem('gameData', JSON.stringify(gameData));
+            }
+        }
+
+        // Função para atualizar o menu com base nas fases completadas
+        function updateMenu() {
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+            if (!gameData) return;
+
+            // Todas as fases
+            const fases = ['fase1', 'fase2', 'fase3', 'fase4'];
+
+            fases.forEach((fase, index) => {
+                const menuLink = document.getElementById(`menu-fase${index + 1}`);
+
+                if (index === 0) {
+                    // Primeira fase sempre desbloqueada
+                    menuLink.classList.remove('locked');
+                } else {
+                    const previousFase = `fase${index}`;
+                    if (gameData.completedPhases.includes(previousFase)) {
+                        menuLink.classList.remove('locked');
+                    } else {
+                        menuLink.classList.add('locked');
+                    }
+                }
+            });
+        }
+
+        // Função para inicializar o jogo a partir do localStorage
+        function initializeGame() {
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+
+            if (gameData) {
+                // Atualiza as informações do jogador
+                updatePlayerInfo();
+
+                // Atualiza o menu
+                updateMenu();
+
+                // Esconde a introdução
+                document.getElementById('intro').style.display = 'none';
+
+                // Exibe a última fase acessada ou a próxima fase a ser completada
+                const fases = ['fase1', 'fase2', 'fase3', 'fase4'];
+                let faseParaMostrar = null;
+
+                if (gameData.currentPhase && document.getElementById(gameData.currentPhase)) {
+                    faseParaMostrar = gameData.currentPhase;
+                } else {
+                    for (let i = 0; i < fases.length; i++) {
+                        if (!gameData.completedPhases.includes(fases[i])) {
+                            faseParaMostrar = fases[i];
+                            break;
+                        }
+                    }
+                }
+
+                if (faseParaMostrar) {
+                    showPhase(faseParaMostrar);
+                }
+            }
+        }
+
+        // Função para resetar o jogo
+        function resetGame() {
+            if (confirm("Tem certeza de que deseja resetar o jogo? Todos os dados serão perdidos.")) {
+                localStorage.removeItem('gameData');
+                location.reload();
+            }
+        }
+
+        // Executa a inicialização ao carregar a página
+        window.onload = function() {
+            initializeGame();
+        }
+
+        // Função para navegar via menu
+        document.querySelectorAll('nav ul li a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const phaseId = this.getAttribute('data-phase');
+                const gameData = JSON.parse(localStorage.getItem('gameData'));
+
+                if (this.classList.contains('locked')) {
+                    alert("Complete a fase anterior para desbloquear esta fase.");
+                    return;
+                }
+
+                showPhase(phaseId);
+            });
+        });
+    </script>
+
+</body>
+</html>
