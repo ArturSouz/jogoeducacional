@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Desafio da Sociedade Conectada</title>
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-pap4pK0S3kYVrzI5tkfT1aMxF3b3k4gPm+P0qOZ1kN8G2NwqGkHp8PZLSh9YxR+b5k1lym+nZqHja+OmmtFhGA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         /* Reset básico */
         * {
@@ -246,6 +248,132 @@
             transform: translateY(-2px);
         }
 
+        /* Modal */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.6); 
+            animation: fadeIn 0.5s;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto; 
+            padding: 30px;
+            border: 2px solid #888;
+            width: 80%; 
+            max-width: 500px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            animation: slideDown 0.5s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .close {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        .modal-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            transition: transform 0.5s;
+        }
+
+        .modal-message {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .modal-points {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .modal button {
+            padding: 12px 25px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .modal button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        /* Vibrant Colors for Modal Based on Score */
+        .score-0 .modal-content {
+            border-color: #f44336; /* Vermelho */
+        }
+
+        .score-0 .modal-icon {
+            color: #f44336;
+            transform: rotate(0deg);
+        }
+
+        .score-10 .modal-content {
+            border-color: #ff9800; /* Laranja */
+        }
+
+        .score-10 .modal-icon {
+            color: #ff9800;
+            transform: rotate(10deg);
+        }
+
+        .score-20 .modal-content {
+            border-color: #ffeb3b; /* Amarelo */
+        }
+
+        .score-20 .modal-icon {
+            color: #ffeb3b;
+            transform: rotate(20deg);
+        }
+
+        .score-30 .modal-content {
+            border-color: #8bc34a; /* Verde Claro */
+        }
+
+        .score-30 .modal-icon {
+            color: #8bc34a;
+            transform: rotate(30deg);
+        }
+
+        .score-40 .modal-content {
+            border-color: #4CAF50; /* Verde */
+        }
+
+        .score-40 .modal-icon {
+            color: #4CAF50;
+            transform: rotate(40deg);
+        }
+
         /* Responsividade */
         @media (max-width: 600px) {
             nav ul {
@@ -254,6 +382,10 @@
 
             .choice button {
                 max-width: 100%;
+            }
+
+            .modal-content {
+                width: 90%;
             }
         }
     </style>
@@ -296,8 +428,8 @@
             <p class="question">Você começou a usar uma rede social e encontrou várias notícias. Você vê uma notícia interessante e pensa em compartilhá-la.</p>
             
             <div class="choice">
-                <button onclick="showLesson('fase1', 'positivo', this)">Verificar a fonte da notícia antes de compartilhar</button>
                 <button onclick="showLesson('fase1', 'negativo', this)">Compartilhar a notícia sem verificar se é verdadeira</button>
+                <button onclick="showLesson('fase1', 'positivo', this)">Verificar a fonte da notícia antes de compartilhar</button>
             </div>
 
             <div id="fase1-lesson" class="lesson">
@@ -330,8 +462,8 @@
             <p class="question">Você precisa descartar seu celular antigo.</p>
             
             <div class="choice">
-                <button onclick="showLesson('fase3', 'positivo', this)">Levar o celular para uma coleta de lixo eletrônico</button>
                 <button onclick="showLesson('fase3', 'negativo', this)">Jogar o celular fora no lixo comum</button>
+                <button onclick="showLesson('fase3', 'positivo', this)">Levar o celular para uma coleta de lixo eletrônico</button>
             </div>
 
             <div id="fase3-lesson" class="lesson">
@@ -362,6 +494,18 @@
         <button onclick="resetGame()">Resetar Jogo</button>
         <p>&copy; 2024 Desafio da Sociedade Conectada. Todos os direitos reservados.</p>
     </footer>
+
+    <!-- Modal -->
+    <div id="score-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-icon" id="modal-icon"><i class="fas fa-trophy"></i></div>
+            <h2>Resultado Final</h2>
+            <p class="modal-message" id="modal-message">Parabéns pelo seu desempenho!</p>
+            <p class="modal-points" id="modal-points">Sua pontuação total é: 40 pontos.</p>
+            <button onclick="restartGame()">Jogar Novamente</button>
+        </div>
+    </div>
 
     <script>
         // Função para iniciar o jogo
@@ -492,6 +636,9 @@
             // Marca a fase como completada e desbloqueia a próxima fase
             markPhaseAsCompleted(phaseId);
             updateMenu();
+
+            // Verifica se todas as fases foram completadas
+            checkGameEnd();
         }
 
         // Função para definir o estilo do botão após a escolha
@@ -537,6 +684,87 @@
             });
         }
 
+        // Função para verificar se o jogo terminou
+        function checkGameEnd() {
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+            const totalPhases = 4;
+            if (gameData.completedPhases.length === totalPhases) {
+                showFinalModal();
+            }
+        }
+
+        // Função para exibir o modal final baseado na pontuação
+        function showFinalModal() {
+            const gameData = JSON.parse(localStorage.getItem('gameData'));
+            const points = gameData.points;
+            let message = "";
+            let icon = "🎉";
+            let colorClass = "";
+
+            switch(points) {
+                case 0:
+                    message = "Você precisa melhorar suas decisões sobre o uso da tecnologia.";
+                    icon = "<i class='fas fa-frown'></i>";
+                    colorClass = "score-0";
+                    break;
+                case 10:
+                    message = "Bom começo! Continue fazendo escolhas responsáveis.";
+                    icon = "<i class='fas fa-smile'></i>";
+                    colorClass = "score-10";
+                    break;
+                case 20:
+                    message = "Ótimo trabalho! Você está no caminho certo.";
+                    icon = "<i class='fas fa-grin-hearts'></i>";
+                    colorClass = "score-20";
+                    break;
+                case 30:
+                    message = "Excelente! Suas decisões são muito responsáveis.";
+                    icon = "<i class='fas fa-grin-stars'></i>";
+                    colorClass = "score-30";
+                    break;
+                case 40:
+                    message = "Parabéns! Você fez escolhas perfeitas!";
+                    icon = "<i class='fas fa-trophy'></i>";
+                    colorClass = "score-40";
+                    break;
+                default:
+                    message = "Parabéns pelo seu desempenho!";
+                    icon = "<i class='fas fa-party-popper'></i>";
+                    colorClass = "score-default";
+            }
+
+            // Adiciona a classe de cor correspondente
+            const modal = document.getElementById('score-modal');
+            const modalContent = modal.querySelector('.modal-content');
+            modalContent.className = 'modal-content ' + colorClass;
+
+            document.getElementById('modal-icon').innerHTML = icon;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('modal-points').innerText = `Sua pontuação total é: ${points} pontos.`;
+
+            modal.style.display = "block";
+        }
+
+        // Função para fechar o modal
+        function closeModal() {
+            const modal = document.getElementById('score-modal');
+            modal.style.display = "none";
+        }
+
+        // Função para reiniciar o jogo a partir do modal
+        function restartGame() {
+            closeModal();
+            resetGame();
+        }
+
+        // Função para resetar o jogo
+        function resetGame() {
+            if (confirm("Tem certeza de que deseja resetar o jogo? Todos os dados serão perdidos.")) {
+                localStorage.removeItem('gameData');
+                location.reload();
+            }
+        }
+
         // Função para inicializar o jogo a partir do localStorage
         function initializeGame() {
             const gameData = JSON.parse(localStorage.getItem('gameData'));
@@ -555,28 +783,19 @@
                 const fases = ['fase1', 'fase2', 'fase3', 'fase4'];
                 let faseParaMostrar = null;
 
-                if (gameData.currentPhase && document.getElementById(gameData.currentPhase)) {
-                    faseParaMostrar = gameData.currentPhase;
-                } else {
-                    for (let i = 0; i < fases.length; i++) {
-                        if (!gameData.completedPhases.includes(fases[i])) {
-                            faseParaMostrar = fases[i];
-                            break;
-                        }
+                for (let i = 0; i < fases.length; i++) {
+                    if (!gameData.completedPhases.includes(fases[i])) {
+                        faseParaMostrar = fases[i];
+                        break;
                     }
                 }
 
                 if (faseParaMostrar) {
                     showPhase(faseParaMostrar);
+                } else {
+                    // Todas as fases completadas
+                    showFinalModal();
                 }
-            }
-        }
-
-        // Função para resetar o jogo
-        function resetGame() {
-            if (confirm("Tem certeza de que deseja resetar o jogo? Todos os dados serão perdidos.")) {
-                localStorage.removeItem('gameData');
-                location.reload();
             }
         }
 
@@ -597,9 +816,19 @@
                     return;
                 }
 
-                showPhase(phaseId);
+                if (gameData) {
+                    showPhase(phaseId);
+                }
             });
         });
+
+        // Fechar modal ao clicar fora do conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('score-modal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     </script>
 
 </body>
